@@ -20,7 +20,6 @@ import 'package:scroll_app_bar/scroll_app_bar.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomeScreen extends StatefulWidget {
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -38,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return SlidingUpPanel(
-      maxHeight: 1600.h,
+      maxHeight: 1500.h,
       minHeight: 150.h,
       parallaxEnabled: true,
       parallaxOffset: .5,
@@ -156,128 +155,132 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       panelBuilder: (_) {
-        return Container(
-          color: CustomColors.white,
-          height: 800.h,
-          child: Column(
-            children: [
-              /* --------------------------------- heading -------------------------------- */
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 50.w,
-                  vertical: 50.h,
-                ),
-                child: CustomText(
-                  text: "Payment method",
-                  color: CustomColors.black,
-                  fontSize: 50.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              /* -------------------------- select payment method ------------------------- */
-              PaymentMethodCard(
-                function: () {
-                  GenericFunctions().toast();
-                },
-              ),
-              SizedBox(
-                height: 50.h,
-              ),
-              /* ------------------------------ summary card ------------------------------ */
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: CustomColors.green.withOpacity(0.3),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(45.r),
-                      topRight: Radius.circular(45.r),
-                    ),
+        return Scaffold(
+          body: Container(
+            color: CustomColors.white,
+            // height: 00.h,
+            child: Column(
+              children: [
+                /* --------------------------------- heading -------------------------------- */
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 50.w,
+                    vertical: 50.h,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 50.w, vertical: 20.h),
-                        child: CustomText(
-                          text: "Summary",
-                          color: CustomColors.black,
-                          fontSize: 50.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  child: CustomText(
+                    text: "Payment method",
+                    color: CustomColors.black,
+                    fontSize: 50.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                /* -------------------------- select payment method ------------------------- */
+                PaymentMethodCard(
+                  function: () {
+                    GenericFunctions().toast();
+                  },
+                ),
+                SizedBox(
+                  height: 50.h,
+                ),
+                /* ------------------------------ summary card ------------------------------ */
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: CustomColors.green.withOpacity(0.3),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(45.r),
+                        topRight: Radius.circular(45.r),
                       ),
-                      SizedBox(
-                        // height: 250.h,
-                        child: StreamBuilder(
-                            stream: _packageBlocController.outPayment,
-                            initialData: 1,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<int> snapshot) {
-                              /* ------------------------------ summary list ------------------------------ */
-                              return Column(
-                                children: [
-                                  for (int i = 0; i < snapshot.data!; i++)
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 50.w, vertical: 20.h),
+                          child: CustomText(
+                            text: "Summary",
+                            color: CustomColors.black,
+                            fontSize: 50.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          // height: 250.h,
+                          child: StreamBuilder(
+                              stream: _packageBlocController.outPayment,
+                              initialData: 1,
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<int> snapshot) {
+                                /* ------------------------------ summary list ------------------------------ */
+                                return Column(
+                                  children: [
+                                    for (int i = 0; i < snapshot.data!; i++)
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 50.w),
+                                        child: Column(
+                                          children: [
+                                            SummaryDetails(
+                                              index: i + 1,
+                                              description: _packageBlocController
+                                                  .packageDescriptionController[
+                                                      i]
+                                                  .text,
+                                              price: _packageBlocController
+                                                  .prices[i],
+                                            ),
+                                            Divider(
+                                              thickness: i == snapshot.data!
+                                                  ? snapshot.data!.r
+                                                  : 3.r,
+                                              color: i == snapshot.data!
+                                                  ? CustomColors.black
+                                                  : CustomColors.greyDark,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     Padding(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 50.w),
-                                      child: Column(
-                                        children: [
-                                          SummaryDetails(
-                                            index: i + 1,
-                                            description: _packageBlocController
-                                                .packageDescriptionController[i]
-                                                .text,
-                                            price: _packageBlocController
-                                                .prices[i],
-                                          ),
-                                          Divider(
-                                            thickness: i == snapshot.data!
-                                                ? snapshot.data!.r
-                                                : 3.r,
-                                            color: i == snapshot.data!
-                                                ? CustomColors.black
-                                                : CustomColors.greyDark,
-                                          ),
-                                        ],
+                                      child: TotalCostCard(
+                                        index: 1,
+                                        total: _packageBlocController
+                                            .totalPayment
+                                            .toString(),
                                       ),
                                     ),
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 50.w),
-                                    child: TotalCostCard(
-                                      index: 1,
-                                      total: _packageBlocController.totalPayment
-                                          .toString(),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }),
-                      ),
-                      const Spacer(),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 50.w,
+                                  ],
+                                );
+                              }),
                         ),
-                        /* ------------------------------- pay button ------------------------------- */
-                        child: SolidFillButton(
-                          text: "Place Order",
-                          function: () {
-                            _packageBlocController.payNow();
-                            setState((){});
-                          },
-                          buttonColor: CustomColors.black,
-                          height: 100.h,
-                          radius: 15.r,
+                        const Spacer(),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 50.w,
+                          ),
+                          /* ------------------------------- pay button ------------------------------- */
+                          child: SolidFillButton(
+                            text: "Place Order",
+                            function: () {
+                              _packageBlocController.payNow();
+                              setState(() {});
+                            },
+                            buttonColor: CustomColors.black,
+                            height: 100.h,
+                            radius: 15.r,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 20.h),
-                      // const Spacer(),
-                    ],
+                        SizedBox(height: 20.h),
+                        // const Spacer(),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
