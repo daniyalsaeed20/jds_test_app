@@ -65,18 +65,21 @@ class PackageBloc extends Bloc<PackageEvent, PackageState> {
         event.packageDeliveryAddressController.add(TextEditingController());
         event.packageDescriptionController.add(TextEditingController());
         event.packagePickUpAddressController.add(TextEditingController());
-        var temp = PackageState.increment(
-          value: event.packageCounter + 1,
-          packageDeliveryAddressController:
-              event.packageDeliveryAddressController,
-          // <TextEditingController>[event.packageDeliveryAddressController + TextEditingController()],
-          packageDescriptionController: event.packageDescriptionController,
-          packagePickUpAddressController: event.packagePickUpAddressController,
-        );
         return emit(
-          temp
+          PackageState.increment(
+            value: event.packageCounter + 1,
+            packageDeliveryAddressController:
+                event.packageDeliveryAddressController,
+            // <TextEditingController>[event.packageDeliveryAddressController + TextEditingController()],
+            packageDescriptionController: event.packageDescriptionController,
+            packagePickUpAddressController:
+                event.packagePickUpAddressController,
+          ),
         );
       case CounterStatus.decrement:
+      event.packageDeliveryAddressController.removeAt(event.index);
+        event.packageDescriptionController.removeAt(event.index);
+        event.packagePickUpAddressController.removeAt(event.index);
         return emit(PackageState.decrement(
           value: event.packageCounter - 1,
           packageDeliveryAddressController:

@@ -12,15 +12,9 @@ class PackageState extends Equatable {
   /*                                    Lists                                   */
   /* -------------------------------------------------------------------------- */
 
-  final List<TextEditingController> packageDescriptionController = [
-    TextEditingController()
-  ];
-  List<TextEditingController> packagePickUpAddressController = [
-    TextEditingController()
-  ];
-  List<TextEditingController> packageDeliveryAddressController = [
-    TextEditingController()
-  ];
+  final List<TextEditingController> packageDescriptionController;
+  List<TextEditingController> packagePickUpAddressController;
+  var packageDeliveryAddressController;
 
   /* -------------------------------------------------------------------------- */
   /*                                  Functions                                 */
@@ -28,13 +22,18 @@ class PackageState extends Equatable {
   PackageState({
     this.status = CounterStatus.none,
     this.packageCounter = 1,
-    packageDescriptionController,
-    packagePickUpAddressController,
-    packageDeliveryAddressController,
+    required this.packageDescriptionController,
+    required this.packagePickUpAddressController,
+    required this.packageDeliveryAddressController,
     this.index = 0,
   });
 
-  PackageState.unknown() : this();
+  PackageState.unknown()
+      : this(
+          packageDeliveryAddressController: [TextEditingController()],
+          packagePickUpAddressController: [TextEditingController()],
+          packageDescriptionController: [TextEditingController()],
+        );
   PackageState.increment({
     required int value,
     required List<TextEditingController> packageDescriptionController,
@@ -47,7 +46,6 @@ class PackageState extends Equatable {
           packageDeliveryAddressController: packageDeliveryAddressController,
           packagePickUpAddressController: packagePickUpAddressController,
         );
-
 
   PackageState.decrement({
     required int value,
