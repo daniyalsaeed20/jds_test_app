@@ -19,7 +19,7 @@ class PackageCard extends StatelessWidget {
   final void Function() functionDescribePackage;
   final void Function() functionPickupAddress;
   final void Function() functionDeliveryAddress;
-  TextEditingController descriptionController;
+  final TextEditingController descriptionController;
   TextEditingController pickupAddressController;
   TextEditingController deliveryAddressController;
 

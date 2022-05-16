@@ -1,9 +1,11 @@
 // ignore_for_file: use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:jds_test_app/controller/package_controller/package_bloc.dart';
-import 'package:jds_test_app/controller/package_controller/package_event.dart';
+import 'package:jds_test_app/controller/package_bloc/bloc/package_bloc.dart';
+// import 'package:jds_test_app/controller/package_controller/package_bloc.dart';
+// import 'package:jds_test_app/controller/package_controller/package_event.dart';
 import 'package:jds_test_app/controller/package_controller/payment_event.dart';
 import 'package:jds_test_app/global/colors.dart';
 import 'package:jds_test_app/global/constant_variables.dart';
@@ -25,13 +27,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _packageBlocController = PackageBloc();
-
-  @override
-  void dispose() {
-    _packageBlocController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _packageBlocController.close();
+  //   super.dispose();
+  // }
 
   // @override
   @override
@@ -41,90 +41,93 @@ class _HomeScreenState extends State<HomeScreen> {
       minHeight: 150.h,
       parallaxEnabled: true,
       parallaxOffset: .5,
-      body: SafeArea(
-        child: Scaffold(
-          /* -------------------------------------------------------------------------- */
-          /*                                   App Bar                                  */
-          /* -------------------------------------------------------------------------- */
-          appBar: ScrollAppBar(
-            backgroundColor: CustomColors.white,
-            elevation: 0,
-            controller: ConstantVariables.homeScrollController,
-            title: CustomText(
-              text: "Order",
-              color: CustomColors.black,
-              fontSize: 50.sp,
-              fontWeight: FontWeight.bold,
+      body: BlocProvider(
+        create: (context) => PackageBloc(),
+        child: SafeArea(
+          child: Scaffold(
+            /* -------------------------------------------------------------------------- */
+            /*                                   App Bar                                  */
+            /* -------------------------------------------------------------------------- */
+            appBar: ScrollAppBar(
+              backgroundColor: CustomColors.white,
+              elevation: 0,
+              controller: ConstantVariables.homeScrollController,
+              title: CustomText(
+                text: "Order",
+                color: CustomColors.black,
+                fontSize: 50.sp,
+                fontWeight: FontWeight.bold,
+              ),
+              automaticallyImplyLeading: false,
+              leading: InkWell(
+                  onTap: () {
+                    GenericFunctions().toast();
+                  },
+                  child: Icon(
+                    Icons.arrow_back,
+                    color: CustomColors.black,
+                    size: 60.r,
+                  )),
             ),
-            automaticallyImplyLeading: false,
-            leading: InkWell(
-                onTap: () {
-                  GenericFunctions().toast();
-                },
-                child: Icon(
-                  Icons.arrow_back,
-                  color: CustomColors.black,
-                  size: 60.r,
-                )),
-          ),
-          backgroundColor: CustomColors.white,
-          body: SingleChildScrollView(
-            controller: ConstantVariables.homeScrollController,
-            child: Column(
-              children: [
-                /* --------------------------------- Heading -------------------------------- */
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 50.w,
-                    vertical: 30.h,
+            backgroundColor: CustomColors.white,
+            body: SingleChildScrollView(
+              controller: ConstantVariables.homeScrollController,
+              child: Column(
+                children: [
+                  /* --------------------------------- Heading -------------------------------- */
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 50.w,
+                      vertical: 30.h,
+                    ),
+                    child: Row(
+                      children: [
+                        CustomText(
+                          text: "Package",
+                          color: CustomColors.black,
+                          fontSize: 50.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      CustomText(
-                        text: "Package",
-                        color: CustomColors.black,
-                        fontSize: 50.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ],
-                  ),
-                ),
-                /* -------------------------------------------------------------------------- */
-                /*                             Delivery Order List                            */
-                /* -------------------------------------------------------------------------- */
-                StreamBuilder(
-                    stream: _packageBlocController.outPackageCounter,
-                    initialData: 1,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<int> snapshot) {
+                  /* -------------------------------------------------------------------------- */
+                  /*                             Delivery Order List                            */
+                  /* -------------------------------------------------------------------------- */
+                  BlocBuilder<PackageBloc, PackageState>(
+                    builder: (BuildContext context, PackageState state) {
                       return Column(
                         children: [
-                          for (int i = 0; i < snapshot.data!; i++)
+                          for (int i = 0; i < state.packageCounter; i++)
                             Column(
                               children: [
                                 if (i != 0)
                                   RemovePackage(
                                     function: () {
-                                      _packageBlocController.selectedIndex = i;
-                                      _packageBlocController
-                                          .packageCounterEventSink
-                                          .add(RemoveEvent());
-                                      _packageBlocController.paymentEventSink
-                                          .add(RemovePaymentEvent());
+                                      context.read<PackageBloc>().add(
+                                            PackageIncrementEvent(
+                                              CounterStatus.decrement,
+                                              state.packageCounter,
+                                              state
+                                                  .packageDescriptionController,
+                                              state
+                                                  .packagePickUpAddressController,
+                                              state
+                                                  .packageDeliveryAddressController,
+                                              i,
+                                            ),
+                                          );
                                     },
                                   ),
                                 Padding(
                                   padding: EdgeInsets.only(bottom: 20.h),
                                   child: PackageCard(
-                                    deliveryAddressController:
-                                        _packageBlocController
-                                            .packageDeliveryAddressController[i],
+                                    deliveryAddressController: state
+                                        .packageDeliveryAddressController[i],
                                     descriptionController:
-                                        _packageBlocController
-                                            .packageDescriptionController[i],
+                                        state.packageDescriptionController[i],
                                     pickupAddressController:
-                                        _packageBlocController
-                                            .packagePickUpAddressController[i],
+                                        state.packagePickUpAddressController[i],
                                     functionDeliveryAddress: () {
                                       GenericFunctions().toast();
                                     },
@@ -138,18 +141,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
+                          AddNewPackage(function: () {
+                            context
+                                .read<PackageBloc>()
+                                .add(PackageIncrementEvent(
+                                  CounterStatus.increment,
+                                  state.packageCounter,
+                                  state.packageDescriptionController,
+                                  state.packagePickUpAddressController,
+                                  state.packageDeliveryAddressController,
+                                  0,
+                                ));
+                          }),
+                          SizedBox(height: 150.h),
                         ],
                       );
-                    }),
-                /* --------------------------- add package button --------------------------- */
-                AddNewPackage(function: () {
-                  _packageBlocController.packageCounterEventSink
-                      .add(AddEvent());
-                  _packageBlocController.paymentEventSink
-                      .add(AddPaymentEvent());
-                }),
-                SizedBox(height: 150.h),
-              ],
+                    },
+                  ),
+
+                  /* --------------------------- add package button --------------------------- */
+                ],
+              ),
             ),
           ),
         ),
@@ -207,55 +219,55 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         SizedBox(
-                          // height: 250.h,
-                          child: StreamBuilder(
-                              stream: _packageBlocController.outPayment,
-                              initialData: 1,
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<int> snapshot) {
-                                /* ------------------------------ summary list ------------------------------ */
-                                return Column(
-                                  children: [
-                                    for (int i = 0; i < snapshot.data!; i++)
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 50.w),
-                                        child: Column(
-                                          children: [
-                                            SummaryDetails(
-                                              index: i + 1,
-                                              description: _packageBlocController
-                                                  .packageDescriptionController[
-                                                      i]
-                                                  .text,
-                                              price: _packageBlocController
-                                                  .prices[i],
-                                            ),
-                                            Divider(
-                                              thickness: i == snapshot.data!
-                                                  ? snapshot.data!.r
-                                                  : 3.r,
-                                              color: i == snapshot.data!
-                                                  ? CustomColors.black
-                                                  : CustomColors.greyDark,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 50.w),
-                                      child: TotalCostCard(
-                                        index: 1,
-                                        total: _packageBlocController
-                                            .totalPayment
-                                            .toString(),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
-                        ),
+                            // height: 250.h,
+                            // child: StreamBuilder(
+                            //     stream: _packageBlocController.outPayment,
+                            //     initialData: 1,
+                            //     builder: (BuildContext context,
+                            //         AsyncSnapshot<int> snapshot) {
+                            //       /* ------------------------------ summary list ------------------------------ */
+                            //       return Column(
+                            //         children: [
+                            //           for (int i = 0; i < snapshot.data!; i++)
+                            //             Padding(
+                            //               padding: EdgeInsets.symmetric(
+                            //                   horizontal: 50.w),
+                            //               child: Column(
+                            //                 children: [
+                            //                   SummaryDetails(
+                            //                     index: i + 1,
+                            //                     description: _packageBlocController
+                            //                         .packageDescriptionController[
+                            //                             i]
+                            //                         .text,
+                            //                     price: _packageBlocController
+                            //                         .prices[i],
+                            //                   ),
+                            //                   Divider(
+                            //                     thickness: i == snapshot.data!
+                            //                         ? snapshot.data!.r
+                            //                         : 3.r,
+                            //                     color: i == snapshot.data!
+                            //                         ? CustomColors.black
+                            //                         : CustomColors.greyDark,
+                            //                   ),
+                            //                 ],
+                            //               ),
+                            //             ),
+                            //           Padding(
+                            //             padding: EdgeInsets.symmetric(
+                            //                 horizontal: 50.w),
+                            //             child: TotalCostCard(
+                            //               index: 1,
+                            //               total: _packageBlocController
+                            //                   .totalPayment
+                            //                   .toString(),
+                            //             ),
+                            //           ),
+                            //         ],
+                            //       );
+                            //     }),
+                            ),
                         const Spacer(),
                         Padding(
                           padding: EdgeInsets.symmetric(
@@ -265,8 +277,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: SolidFillButton(
                             text: "Place Order",
                             function: () {
-                              _packageBlocController.payNow();
-                              setState(() {});
+                              // _packageBlocController.payNow();
+                              // setState(() {});
                             },
                             buttonColor: CustomColors.black,
                             height: 100.h,
