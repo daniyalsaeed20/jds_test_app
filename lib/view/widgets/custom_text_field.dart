@@ -16,6 +16,7 @@ class CustomTextField extends StatelessWidget {
   Color cursorColor;
   Color backgroundColorOne;
   Color backgroundColorTwo;
+  final String? Function(String?)? function;
 
   CustomTextField({
     required this.title,
@@ -30,6 +31,7 @@ class CustomTextField extends StatelessWidget {
     this.cursorColor = CustomColors.green,
     this.backgroundColorOne = CustomColors.transparent,
     this.backgroundColorTwo = CustomColors.backGroundTwo,
+    this.function,
   });
 
   @override
@@ -45,6 +47,7 @@ class CustomTextField extends StatelessWidget {
             color: textColor,
           ),
           enabled: isEnabled,
+          onChanged: function,
           onEditingComplete: () {},
           obscureText: obscureText,
           keyboardType: keyboardType,

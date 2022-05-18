@@ -14,11 +14,13 @@ class PackageCard extends StatelessWidget {
     required this.descriptionController,
     required this.pickupAddressController,
     required this.deliveryAddressController,
+    this.onTextEdited,
   });
 
   final void Function() functionDescribePackage;
   final void Function() functionPickupAddress;
   final void Function() functionDeliveryAddress;
+  final String? Function(String?)? onTextEdited;
   final TextEditingController descriptionController;
   TextEditingController pickupAddressController;
   TextEditingController deliveryAddressController;
@@ -35,6 +37,7 @@ class PackageCard extends StatelessWidget {
               width: 500.w,
               height: 110.h,
               child: CustomTextField(
+                function: onTextEdited,
                 title: "Describe your package",
                 controller: descriptionController,
                 validator: CustomValidators().fieldValidator,
@@ -56,6 +59,7 @@ class PackageCard extends StatelessWidget {
               width: 500.w,
               height: 110.h,
               child: CustomTextField(
+                function: onTextEdited,
                 title: "Pickup address",
                 controller: pickupAddressController,
                 validator: CustomValidators().fieldValidator,
@@ -77,6 +81,7 @@ class PackageCard extends StatelessWidget {
               width: 500.w,
               height: 110.h,
               child: CustomTextField(
+                function: onTextEdited,
                 title: "Delivery address",
                 controller: deliveryAddressController,
                 validator: CustomValidators().fieldValidator,

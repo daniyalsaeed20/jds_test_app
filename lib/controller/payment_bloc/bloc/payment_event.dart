@@ -1,7 +1,13 @@
+// ignore_for_file: must_be_immutable, overridden_fields, annotate_overrides, prefer_typing_uninitialized_variables, prefer_const_constructors_in_immutables
+
 part of 'payment_bloc.dart';
 
 abstract class PaymentEvent extends Equatable {
-  const PaymentEvent();
+  const PaymentEvent({
+    this.paymentCounter = 1,
+  });
+
+  final int paymentCounter;
 
   @override
   List<Object> get props => [];
@@ -47,17 +53,94 @@ class PaymentIncrementEvent extends PaymentEvent {
         index,
       ];
 }
+class PayNowEvent extends PaymentEvent {
+  PayNowEvent({
+    required this.status,
+    this.paymentCounter = 1,
+    this.totalPayment = 8,
+    this.prices = const [8],
+    required this.packages,
+    this.index = 0,
+    this.read,
+  });
 
-// void _mapPaymentEventToState(PaymentEvent event) {
-//   if (event is AddPaymentEvent) {
-//     paymentCounter += 1;
-//     totalPayment += 8;
-//     prices.add(8);
-//   } else {
-//     paymentCounter -= 1;
-//     totalPayment -= 8;
-//     prices.removeAt(selectedIndex);
-//   }
+  /* -------------------------------------------------------------------------- */
+  /*                                  variables                                 */
+  /* -------------------------------------------------------------------------- */
 
-//   _inPayment.add(paymentCounter);
-// }
+  final PaymentStatus status;
+  final int paymentCounter;
+  final int totalPayment;
+  final int index;
+  var read;
+
+  /* -------------------------------------------------------------------------- */
+  /*                                    Lists                                   */
+  /* -------------------------------------------------------------------------- */
+
+  List<int> prices;
+  List<Package> packages;
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  Functions                                 */
+  /* -------------------------------------------------------------------------- */
+
+  @override
+  List<Object> get props => [
+        status,
+        paymentCounter,
+        totalPayment,
+        prices,
+        packages,
+        index,
+      ];
+}
+
+class PayNowEventResponse extends PaymentEvent {
+  PayNowEventResponse({
+    required this.status,
+  });
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  variables                                 */
+  /* -------------------------------------------------------------------------- */
+
+  final PaymentStatus status;
+
+  /* -------------------------------------------------------------------------- */
+  /*                                    Lists                                   */
+  /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  Functions                                 */
+  /* -------------------------------------------------------------------------- */
+
+  @override
+  List<Object> get props => [
+        status,
+      ];
+}
+class PaymentResetEvent extends PaymentEvent {
+  PaymentResetEvent({
+    required this.status,
+  });
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  variables                                 */
+  /* -------------------------------------------------------------------------- */
+
+  final PaymentStatus status;
+
+  /* -------------------------------------------------------------------------- */
+  /*                                    Lists                                   */
+  /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  Functions                                 */
+  /* -------------------------------------------------------------------------- */
+
+  @override
+  List<Object> get props => [
+        status,
+      ];
+}

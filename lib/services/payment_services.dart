@@ -1,6 +1,9 @@
+// ignore_for_file: unnecessary_string_interpolations
+
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
-import 'package:jds_test_app/global/generic_functions.dart';
+import 'package:jds_test_app/controller/payment_bloc/bloc/payment_bloc.dart';
 import 'package:jds_test_app/model/error_model.dart';
 import 'package:jds_test_app/model/order_model.dart';
 import 'package:jds_test_app/model/package_model.dart';
@@ -21,8 +24,16 @@ class PaymentServices {
   /*                                  Functions                                 */
   /* -------------------------------------------------------------------------- */
 
-  payNow(PackageModel packageModel) async {
+  payNow({
+    required PackageModel packageModel,
+    var read,
+  }) async {
     try {
+      read.add(
+        PayNowEventResponse(
+          status: PaymentStatus.payNowResponse,
+        ),
+      );
       http.Response response = await http.post(
         Uri.parse(mainUrl + ordersUrl),
         headers: <String, String>{
@@ -39,25 +50,39 @@ class PaymentServices {
         if (res.containsKey("code")) {
           ErrorModel errorModel =
               ErrorModel.fromJson(jsonDecode(response.body));
-          GenericFunctions().toast(text: "Error: " + errorModel.code);
+          return {
+            'message': 'Error: ${errorModel.description}',
+            'code': '${errorModel.code}',
+            'heading': 'False Data',
+          };
         }
         /* ------------------------ if parsed data is correct ----------------------- */
         else {
           OrderModel orderModel =
               OrderModel.fromJson(jsonDecode(response.body));
-          GenericFunctions()
-              .toast(text: "Your orderId is: " + orderModel.orderId);
+          return {
+            'message': 'Your orderId is: ' + orderModel.orderId,
+            'code': '',
+            'heading': 'Success',
+          };
         }
       }
       /* ------------------------- if response is not 200 ------------------------- */
       else {
-        GenericFunctions()
-            .toast(text: "Error: " + response.statusCode.toString());
+        return {
+          'message': 'Error: ',
+          'code': '${response.statusCode}',
+          'heading': 'Error',
+        };
       }
     }
     /* --------------------------- if some other error -------------------------- */
     catch (e) {
-      GenericFunctions().toast(text: "Error: " + e.toString());
+      return {
+        'message': 'Error: ',
+        'code': e.toString(),
+        'heading': 'Connection Error',
+      };
     }
   }
 }

@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors
+// ignore_for_file: use_key_in_widget_constructors, body_might_complete_normally_nullable, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,17 +24,27 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SlidingUpPanel(
-      maxHeight: 1500.h,
-      minHeight: 150.h,
-      parallaxEnabled: true,
-      parallaxOffset: .5,
-      body: const PackageBlocWidget(),
-      panelBuilder: (_) {
-        return const PaymentBlocWidget();
-      },
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(18.r), topRight: Radius.circular(18.r)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => PackageBloc(),
+        ),
+        BlocProvider(
+          create: (context) => PaymentBloc(),
+        ),
+      ],
+      child: SlidingUpPanel(
+        maxHeight: 1500.h,
+        minHeight: 150.h,
+        parallaxEnabled: true,
+        parallaxOffset: .5,
+        body: const PackageBlocWidget(),
+        panelBuilder: (_) {
+          return const PaymentBlocWidget();
+        },
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(18.r), topRight: Radius.circular(18.r)),
+      ),
     );
   }
 }
@@ -46,124 +56,121 @@ class PackageBlocWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => PackageBloc(),
-        ),
-        BlocProvider(
-          create: (context) => PaymentBloc(),
-        ),
-      ],
-      child: SafeArea(
-        child: Scaffold(
-          /* -------------------------------------------------------------------------- */
-          /*                                   App Bar                                  */
-          /* -------------------------------------------------------------------------- */
-          appBar: ScrollAppBar(
-            backgroundColor: CustomColors.white,
-            elevation: 0,
-            controller: ConstantVariables.homeScrollController,
-            title: CustomText(
-              text: "Order",
-              color: CustomColors.black,
-              fontSize: 50.sp,
-              fontWeight: FontWeight.bold,
-            ),
-            automaticallyImplyLeading: false,
-            leading: InkWell(
-                onTap: () {
-                  GenericFunctions().toast();
-                },
-                child: Icon(
-                  Icons.arrow_back,
-                  color: CustomColors.black,
-                  size: 60.r,
-                )),
-          ),
+    return SafeArea(
+      child: Scaffold(
+        /* -------------------------------------------------------------------------- */
+        /*                                   App Bar                                  */
+        /* -------------------------------------------------------------------------- */
+        appBar: ScrollAppBar(
           backgroundColor: CustomColors.white,
-          body: SingleChildScrollView(
-            controller: ConstantVariables.homeScrollController,
-            child: Column(
-              children: [
-                /* --------------------------------- Heading -------------------------------- */
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 50.w,
-                    vertical: 30.h,
-                  ),
-                  child: Row(
+          elevation: 0,
+          controller: ConstantVariables.homeScrollController,
+          title: CustomText(
+            text: "Order",
+            color: CustomColors.black,
+            fontSize: 50.sp,
+            fontWeight: FontWeight.bold,
+          ),
+          automaticallyImplyLeading: false,
+          leading: InkWell(
+              onTap: () {
+                GenericFunctions().toast();
+              },
+              child: Icon(
+                Icons.arrow_back,
+                color: CustomColors.black,
+                size: 60.r,
+              )),
+        ),
+        backgroundColor: CustomColors.white,
+        body: SingleChildScrollView(
+          controller: ConstantVariables.homeScrollController,
+          child: Column(
+            children: [
+              /* --------------------------------- Heading -------------------------------- */
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 50.w,
+                  vertical: 30.h,
+                ),
+                child: Row(
+                  children: [
+                    CustomText(
+                      text: "Package",
+                      color: CustomColors.black,
+                      fontSize: 50.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ],
+                ),
+              ),
+              /* -------------------------------------------------------------------------- */
+              /*                             Delivery Order List                            */
+              /* -------------------------------------------------------------------------- */
+              BlocBuilder<PackageBloc, PackageState>(
+                builder: (BuildContext context, PackageState state) {
+                  return Column(
                     children: [
-                      CustomText(
-                        text: "Package",
-                        color: CustomColors.black,
-                        fontSize: 50.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ],
-                  ),
-                ),
-                /* -------------------------------------------------------------------------- */
-                /*                             Delivery Order List                            */
-                /* -------------------------------------------------------------------------- */
-                BlocBuilder<PackageBloc, PackageState>(
-                  builder: (BuildContext context, PackageState state) {
-                    return Column(
-                      children: [
-                        for (int i = 0; i < state.packageCounter; i++)
-                          Column(
-                            children: [
-                              if (state.packageCounter > 1)
-                                RemovePackage(
-                                  function: () {
-                                    context.read<PackageBloc>().add(
-                                          PackageIncrementEvent(
-                                            status: CounterStatus.decrement,
-                                            index: i,
-                                            read: context.read,
-                                          ),
-                                        );
-                                  },
-                                ),
-                              Padding(
-                                padding: EdgeInsets.only(bottom: 20.h),
-                                child: PackageCard(
-                                  deliveryAddressController:
-                                      state.packageDeliveryAddressController[i],
-                                  descriptionController:
-                                      state.packageDescriptionController[i],
-                                  pickupAddressController:
-                                      state.packagePickUpAddressController[i],
-                                  functionDeliveryAddress: () {
-                                    GenericFunctions().toast();
-                                  },
-                                  functionDescribePackage: () {
-                                    GenericFunctions().toast();
-                                  },
-                                  functionPickupAddress: () {
-                                    GenericFunctions().toast();
-                                  },
-                                ),
+                      for (int i = 0; i < state.packageCounter; i++)
+                        Column(
+                          children: [
+                            if (state.packageCounter > 1)
+                              RemovePackage(
+                                function: () {
+                                  context.read<PackageBloc>().add(
+                                        PackageIncrementEvent(
+                                          status: PackageStatus.decrement,
+                                          index: i,
+                                          read: context.read,
+                                        ),
+                                      );
+                                },
                               ),
-                            ],
-                          ),
-                        AddNewPackage(function: () {
-                          context.read<PackageBloc>().add(
-                                PackageIncrementEvent(
-                                  status: CounterStatus.increment,
-                                  read: context.read,
-                                ),
-                              );
-                        }),
-                        SizedBox(height: 150.h),
-                      ],
-                    );
-                  },
-                ),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 20.h),
+                              child: PackageCard(
+                                onTextEdited: (value) {
+                                  context.read<PackageBloc>().add(
+                                        PackageEditingEvent(
+                                          status: PackageStatus.onEdit,
+                                          read: context.read,
+                                        ),
+                                      );
+                                },
+                                deliveryAddressController:
+                                    state.packageDeliveryAddressController[i],
+                                descriptionController:
+                                    state.packageDescriptionController[i],
+                                pickupAddressController:
+                                    state.packagePickUpAddressController[i],
+                                functionDeliveryAddress: () {
+                                  GenericFunctions().toast();
+                                },
+                                functionDescribePackage: () {
+                                  GenericFunctions().toast();
+                                },
+                                functionPickupAddress: () {
+                                  GenericFunctions().toast();
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      AddNewPackage(function: () {
+                        context.read<PackageBloc>().add(
+                              PackageIncrementEvent(
+                                status: PackageStatus.increment,
+                              ),
+                            );
+                      }),
+                      SizedBox(height: 150.h),
+                    ],
+                  );
+                },
+              ),
 
-                /* --------------------------- add package button --------------------------- */
-              ],
-            ),
+              /* --------------------------- add package button --------------------------- */
+            ],
           ),
         ),
       ),
@@ -178,10 +185,51 @@ class PaymentBlocWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PaymentBloc(),
-      child: Scaffold(
-        body: Container(
+    return Scaffold(
+      body: BlocListener<PaymentBloc, PaymentState>(
+        listener: (context, state) {
+          if (state.status == PaymentStatus.payNowResponse) {
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                dismissDirection: DismissDirection.endToStart,
+                duration: const Duration(seconds: 3),
+                backgroundColor: CustomColors.backGroundTwo,
+                content: SizedBox(
+                  height: 150.h,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: state.heading,
+                        fontSize: 36.sp,
+                        color: CustomColors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      CustomText(
+                        text: state.message + state.code,
+                        fontSize: 28.sp,
+                        color: CustomColors.white,
+                        maxLines: 3,
+                        alignment: TextAlign.left,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+            context.read<PaymentBloc>().add(
+                  PaymentResetEvent(
+                    status: PaymentStatus.unknown,
+                  ),
+                );
+            context.read<PackageBloc>().add(
+                  PackageResetEvent(
+                    status: PackageStatus.unknown,
+                  ),
+                );
+          }
+        },
+        child: Container(
           color: CustomColors.white,
           // height: 00.h,
           child: Column(
@@ -283,8 +331,13 @@ class PaymentBlocWidget extends StatelessWidget {
                         child: SolidFillButton(
                           text: "Place Order",
                           function: () {
-                            // _packageBlocController.payNow();
-                            // setState(() {});
+                            context.read<PaymentBloc>().add(
+                                  PayNowEvent(
+                                    status: PaymentStatus.payNow,
+                                    packages: const [],
+                                    read: context.read<PaymentBloc>(),
+                                  ),
+                                );
                           },
                           buttonColor: CustomColors.black,
                           height: 100.h,

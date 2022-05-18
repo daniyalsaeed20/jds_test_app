@@ -1,10 +1,12 @@
+// ignore_for_file: must_be_immutable
+
 part of 'package_bloc.dart';
 
 class PackageState extends Equatable {
   /* -------------------------------------------------------------------------- */
   /*                                  Variables                                 */
   /* -------------------------------------------------------------------------- */
-  CounterStatus status;
+  PackageStatus status;
   int packageCounter;
   int index;
 
@@ -20,7 +22,7 @@ class PackageState extends Equatable {
   /*                                  Functions                                 */
   /* -------------------------------------------------------------------------- */
   PackageState({
-    this.status = CounterStatus.none,
+    this.status = PackageStatus.unknown,
     this.packageCounter = 1,
     required this.packageDescriptionController,
     required this.packagePickUpAddressController,
@@ -40,7 +42,7 @@ class PackageState extends Equatable {
     required List<TextEditingController> packagePickUpAddressController,
     required List<TextEditingController> packageDeliveryAddressController,
   }) : this(
-          status: CounterStatus.increment,
+          status: PackageStatus.increment,
           packageCounter: value,
           packageDescriptionController: packageDescriptionController,
           packageDeliveryAddressController: packageDeliveryAddressController,
@@ -54,12 +56,25 @@ class PackageState extends Equatable {
     required List<TextEditingController> packagePickUpAddressController,
     required List<TextEditingController> packageDeliveryAddressController,
   }) : this(
-          status: CounterStatus.decrement,
+          status: PackageStatus.decrement,
           packageCounter: value,
           packageDeliveryAddressController: packageDeliveryAddressController,
           packageDescriptionController: packageDescriptionController,
           packagePickUpAddressController: packagePickUpAddressController,
           index: index,
+        );
+
+  PackageState.onEdit({
+    required List<TextEditingController> packageDescriptionController,
+    required List<TextEditingController> packagePickUpAddressController,
+    required List<TextEditingController> packageDeliveryAddressController,
+    required int value,
+  }) : this(
+          packageCounter: value,
+          status: PackageStatus.onEdit,
+          packageDeliveryAddressController: packageDeliveryAddressController,
+          packageDescriptionController: packageDescriptionController,
+          packagePickUpAddressController: packagePickUpAddressController,
         );
 
   @override
