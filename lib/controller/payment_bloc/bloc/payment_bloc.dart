@@ -60,9 +60,9 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         return emit(
           PaymentState.addPayment(
             value: event.paymentCounter + 1,
-            packages: state.packages,
-            prices: state.prices,
-            totalPayment: state.prices.fold<int>(
+            packages: event.packages,
+            prices: event.prices,
+            totalPayment: event.prices.fold<int>(
                 0, (previousValue, element) => previousValue + element),
           ),
         );

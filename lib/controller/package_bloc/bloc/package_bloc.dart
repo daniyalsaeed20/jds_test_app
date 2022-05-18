@@ -62,23 +62,27 @@ class PackageBloc extends Bloc<PackageEvent, PackageState> {
         state.packageDescriptionController.add(TextEditingController());
         state.packagePickUpAddressController.add(TextEditingController());
 
-List<Package> packages = [];
-List<int> prices = [];
-        for(int i = 0; i < state.packageCounter;i++){
-packages.add(Package(delivery: state.packageDeliveryAddressController[i].text, description:state.packageDescriptionController[i].text,pickup: state.packagePickUpAddressController[i].text,));
-       prices.add(8);
-        } 
+        List<Package> packages = [];
+        List<int> prices = [];
+        for (int i = 0; i < state.packageCounter; i++) {
+          packages.add(Package(
+            delivery: state.packageDeliveryAddressController[i].text,
+            description: state.packageDescriptionController[i].text,
+            pickup: state.packagePickUpAddressController[i].text,
+          ));
+          prices.add(8);
+        }
 
         event.read!<PaymentBloc>().add(
-              PaymentIncrementEvent(
-                packages: packages,
-                status: PaymentStatus.addPayment,
-                index: event.index,
-                paymentCounter: state.packageCounter,
-                prices:prices ,
-                totalPayment: 0,                
-              ),
-            );
+          PaymentIncrementEvent(
+            packages: packages,
+            status: PaymentStatus.addPayment,
+            index: event.index,
+            paymentCounter: state.packageCounter,
+            prices: prices,
+            totalPayment: 0,
+          ),
+        );
 
         return emit(
           PackageState.increment(
