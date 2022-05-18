@@ -8,30 +8,23 @@ abstract class PackageEvent extends Equatable {
 }
 
 class PackageIncrementEvent extends PackageEvent {
-  PackageIncrementEvent(
-    this.status,
-    this.packageCounter,
-    this.packageDescriptionController,
-    this.packagePickUpAddressController,
-    this.packageDeliveryAddressController,
-    this.index,
-  );
+  PackageIncrementEvent({
+    required this.status,
+    this.index = 0,
+    this.read,
+  });
 
   /* -------------------------------------------------------------------------- */
   /*                                  variables                                 */
   /* -------------------------------------------------------------------------- */
 
   final CounterStatus status;
-  final int packageCounter;
   final int index;
+  var read;
 
   /* -------------------------------------------------------------------------- */
   /*                                    Lists                                   */
   /* -------------------------------------------------------------------------- */
-
-  List<TextEditingController> packageDescriptionController;
-  List<TextEditingController> packagePickUpAddressController;
-  List<TextEditingController> packageDeliveryAddressController;
 
   /* -------------------------------------------------------------------------- */
   /*                                  Functions                                 */
@@ -40,10 +33,7 @@ class PackageIncrementEvent extends PackageEvent {
   @override
   List<Object> get props => [
         status,
-        packageCounter,
-        packageDescriptionController,
-        packagePickUpAddressController,
-        packageDeliveryAddressController,
         index,
+        read,
       ];
 }

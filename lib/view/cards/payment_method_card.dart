@@ -23,7 +23,7 @@ class PaymentMethodCard extends StatelessWidget {
             Icon(MdiIcons.creditCard, size: 90.r),
             SizedBox(
               width: 500.w,
-              height: 100.h,
+              height: 110.h,
               child: CustomTextField(
                 title: "Select a payment method",
                 controller: TextEditingController(),

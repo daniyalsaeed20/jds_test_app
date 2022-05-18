@@ -12,9 +12,9 @@ class PackageState extends Equatable {
   /*                                    Lists                                   */
   /* -------------------------------------------------------------------------- */
 
-  final List<TextEditingController> packageDescriptionController;
+  List<TextEditingController> packageDescriptionController;
   List<TextEditingController> packagePickUpAddressController;
-  var packageDeliveryAddressController;
+  List<TextEditingController> packageDeliveryAddressController;
 
   /* -------------------------------------------------------------------------- */
   /*                                  Functions                                 */
@@ -56,7 +56,7 @@ class PackageState extends Equatable {
   }) : this(
           status: CounterStatus.decrement,
           packageCounter: value,
-          packageDeliveryAddressController: packagePickUpAddressController,
+          packageDeliveryAddressController: packageDeliveryAddressController,
           packageDescriptionController: packageDescriptionController,
           packagePickUpAddressController: packagePickUpAddressController,
           index: index,

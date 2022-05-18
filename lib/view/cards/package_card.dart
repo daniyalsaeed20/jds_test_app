@@ -33,7 +33,7 @@ class PackageCard extends StatelessWidget {
             Icon(MdiIcons.packageVariantClosed, size: 90.r),
             SizedBox(
               width: 500.w,
-              height: 100.h,
+              height: 110.h,
               child: CustomTextField(
                 title: "Describe your package",
                 controller: descriptionController,
@@ -46,7 +46,7 @@ class PackageCard extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: 20.h,
+          height: 30.h,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -54,7 +54,7 @@ class PackageCard extends StatelessWidget {
             Icon(Icons.location_on, size: 90.r),
             SizedBox(
               width: 500.w,
-              height: 100.h,
+              height: 110.h,
               child: CustomTextField(
                 title: "Pickup address",
                 controller: pickupAddressController,
@@ -67,7 +67,7 @@ class PackageCard extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: 20.h,
+          height: 30.h,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -75,7 +75,7 @@ class PackageCard extends StatelessWidget {
             Icon(Icons.flag, size: 90.r),
             SizedBox(
               width: 500.w,
-              height: 100.h,
+              height: 110.h,
               child: CustomTextField(
                 title: "Delivery address",
                 controller: deliveryAddressController,

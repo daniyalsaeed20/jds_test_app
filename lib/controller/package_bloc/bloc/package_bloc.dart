@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:jds_test_app/controller/payment_bloc/bloc/payment_bloc.dart';
 import 'package:jds_test_app/model/package_model.dart';
 import 'package:jds_test_app/services/payment_services.dart';
 
@@ -41,12 +42,7 @@ class PackageBloc extends Bloc<PackageEvent, PackageState> {
     _counterStatusSubscription = status.listen(
       (status) => add(
         PackageIncrementEvent(
-          status,
-          1,
-          [TextEditingController()],
-          [TextEditingController()],
-          [TextEditingController()],
-          0,
+          status: status,
         ),
       ),
     );
@@ -62,30 +58,48 @@ class PackageBloc extends Bloc<PackageEvent, PackageState> {
       PackageIncrementEvent event, Emitter<PackageState> emit) {
     switch (event.status) {
       case CounterStatus.increment:
-        event.packageDeliveryAddressController.add(TextEditingController());
-        event.packageDescriptionController.add(TextEditingController());
-        event.packagePickUpAddressController.add(TextEditingController());
+        state.packageDeliveryAddressController.add(TextEditingController());
+        state.packageDescriptionController.add(TextEditingController());
+        state.packagePickUpAddressController.add(TextEditingController());
+
+List<Package> packages = [];
+List<int> prices = [];
+        for(int i = 0; i < state.packageCounter;i++){
+packages.add(Package(delivery: state.packageDeliveryAddressController[i].text, description:state.packageDescriptionController[i].text,pickup: state.packagePickUpAddressController[i].text,));
+       prices.add(8);
+        } 
+
+        event.read!<PaymentBloc>().add(
+              PaymentIncrementEvent(
+                packages: packages,
+                status: PaymentStatus.addPayment,
+                index: event.index,
+                paymentCounter: state.packageCounter,
+                prices:prices ,
+                totalPayment: 0,                
+              ),
+            );
+
         return emit(
           PackageState.increment(
-            value: event.packageCounter + 1,
+            value: state.packageCounter + 1,
             packageDeliveryAddressController:
-                event.packageDeliveryAddressController,
-            // <TextEditingController>[event.packageDeliveryAddressController + TextEditingController()],
-            packageDescriptionController: event.packageDescriptionController,
+                state.packageDeliveryAddressController,
+            packageDescriptionController: state.packageDescriptionController,
             packagePickUpAddressController:
-                event.packagePickUpAddressController,
+                state.packagePickUpAddressController,
           ),
         );
       case CounterStatus.decrement:
-      event.packageDeliveryAddressController.removeAt(event.index);
-        event.packageDescriptionController.removeAt(event.index);
-        event.packagePickUpAddressController.removeAt(event.index);
+        state.packageDeliveryAddressController.removeAt(event.index);
+        state.packageDescriptionController.removeAt(event.index);
+        state.packagePickUpAddressController.removeAt(event.index);
         return emit(PackageState.decrement(
-          value: event.packageCounter - 1,
+          value: state.packageCounter - 1,
           packageDeliveryAddressController:
-              event.packageDeliveryAddressController,
-          packageDescriptionController: event.packageDescriptionController,
-          packagePickUpAddressController: event.packagePickUpAddressController,
+              state.packageDeliveryAddressController,
+          packageDescriptionController: state.packageDescriptionController,
+          packagePickUpAddressController: state.packagePickUpAddressController,
           index: event.index,
         ));
       default:
